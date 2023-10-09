@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import {getFirestore, collection, getDocs, addDoc, deleteDoc, doc, onSnapshot, query, where, serverTimestamp, orderBy, updateDoc} from "firebase/firestore";
-
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyApo0r62iqy7srW0Bm3KiW0z6BNHomNzj8",
@@ -13,6 +13,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(); //service name
+const auth= getAuth();
 const colRef= collection(db,"Movie"); //service name, collection name
 const qRef= query(colRef, where("Category","==","drama"), orderBy("CreatedAt"));
 
@@ -79,4 +80,44 @@ updateForm.addEventListener("submit", event=>{
     .then(()=>{
         updateForm.reset();
     });
-})
+});
+
+
+const registerForm= document.querySelector(".register");
+registerForm.addEventListener("submit", event=>{
+    event.preventDefault();
+
+    createUserWithEmailAndPassword(auth, registerForm.email.value, registerForm.password.value)
+     .then(credentials =>{
+        console.log(credentials);
+        registerForm.reset();
+     })
+     .catch(error=>{
+        console.log(error);
+     })
+});
+
+const logoutButton = document.querySelector(".logout");
+logoutButton.addEventListener("click", event=>{
+    signOut(auth)
+        .then(()=>{
+            console.log("User Logged Out !!");
+        })
+        .catch(error=>{
+            console.log(error);
+        })
+});
+
+const loginForm= document.querySelector(".login");
+loginForm.addEventListener("submit", event=>{
+    event.preventDefault();
+
+    signInWithEmailAndPassword(auth, loginForm.email.value, loginForm.password.value)
+     .then(credentials =>{
+        console.log(credentials);
+        loginForm.reset();
+     })
+     .catch(error=>{
+        console.log(error);
+     })
+});

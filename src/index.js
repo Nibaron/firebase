@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import {getFirestore, collection, getDocs, addDoc, deleteDoc, doc, onSnapshot, query, where, serverTimestamp, orderBy} from "firebase/firestore";
+import {getFirestore, collection, getDocs, addDoc, deleteDoc, doc, onSnapshot, query, where, serverTimestamp, orderBy, updateDoc} from "firebase/firestore";
 
 
 const firebaseConfig = {
@@ -15,6 +15,11 @@ const app = initializeApp(firebaseConfig);
 const db  = getFirestore(); //service name
 const colRef= collection(db,"Movie"); //service name, collection name
 const qRef= query(colRef, where("Category","==","drama"), orderBy("CreatedAt"));
+
+const documentReference= doc(db, "Movie", "TyozMEseQgkTCGOivIeK");
+onSnapshot(documentReference, (document)=>{
+    console.log(document.data(), document.ID);
+})
 
 getDocs(qRef)
     .then( data=>{
@@ -60,4 +65,18 @@ deleteForm.addEventListener("submit", event=>{
     .then(()=>{
         deleteForm.reset();
     })
+})
+
+const updateForm= document.querySelector(".update");
+updateForm.addEventListener("submit", event=>{
+    event.preventDefault();
+
+    const documentReference= doc(db, "Movie", updateForm.ID.value);
+    updateDoc(documentReference,{
+        Name: updateForm.name.value,
+        UpdatedAt: serverTimestamp()
+    })
+    .then(()=>{
+        updateForm.reset();
+    });
 })
